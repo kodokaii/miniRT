@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/13 22:29:47 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/17 13:00:23 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,5 +53,17 @@ int	parse_color(char **str, t_vec3 color)
 	color[X] /= 255.0f;
 	color[Y] /= 255.0f;
 	color[Z] /= 255.0f;
+	return (EXIT_SUCCESS);
+}
+
+int	add_object(t_rt *rt, t_object *object)
+{
+	t_list	*new_object;
+
+	if (object->type == INVALID_OBJECT)
+		return (EXIT_FAILURE);
+	new_object = ft_lstnew(ft_memdup(object, sizeof(t_object)));
+	ft_lstadd_front(&rt->object, new_object);
+	rt->count.object[object->type]++;
 	return (EXIT_SUCCESS);
 }

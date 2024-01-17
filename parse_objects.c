@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/13 22:47:40 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/17 13:46:27 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,55 +14,56 @@
 
 int	parse_sphere(t_rt *rt, char **line)
 {
-	t_sphere	sphere;
-	t_list		*new_sphere;
+	t_object	object;
+	float		diameter;
 
-	if (parse_vec3(line, sphere.pos, -FLT_MAX, FLT_MAX))
+	object.type = SPHERE;
+	if (parse_vec3(line, object.data.sphere.pos, -FLT_MAX, FLT_MAX))
 		return (EXIT_FAILURE);
-	if (parse_value(line, &sphere.diameter, -FLT_MAX, FLT_MAX))
+	if (parse_value(line, &diameter, -FLT_MAX, FLT_MAX))
 		return (EXIT_FAILURE);
-	if (parse_color(line, sphere.color))
+	object.data.sphere.radius = diameter / 2;
+	if (parse_color(line, object.color))
 		return (EXIT_FAILURE);
-	new_sphere = ft_lstnew(ft_memdup(&sphere, sizeof(t_sphere)));
-	ft_lstadd_front(&rt->sphere, new_sphere);
-	rt->count.sphere++;
-	return (EXIT_SUCCESS);
+	return (add_object(rt, &object));
 }
 
 int	parse_plane(t_rt *rt, char **line)
 {
-	t_plane	plane;
-	t_list	*new_plane;
+	t_object	object;
 
-	if (parse_vec3(line, plane.pos, -FLT_MAX, FLT_MAX))
+	object.type = PLANE;
+	if (parse_vec3(line, object.data.plane.pos, -FLT_MAX, FLT_MAX))
 		return (EXIT_FAILURE);
-	if (parse_vec3(line, plane.axis, -FLT_MAX, FLT_MAX))
+	if (parse_vec3(line, object.data.plane.axis, -FLT_MAX, FLT_MAX))
 		return (EXIT_FAILURE);
-	if (parse_color(line, plane.color))
+	if (kdm_vec3_norm(object.data.plane.axis) == 0.0f)
+		return (ft_error("No plane orientation !", EXIT_FAILURE));
+	kdm_vec3_normalize(object.data.plane.axis);
+	if (parse_color(line, object.color))
 		return (EXIT_FAILURE);
-	new_plane = ft_lstnew(ft_memdup(&plane, sizeof(t_plane)));
-	ft_lstadd_front(&rt->plane, new_plane);
-	rt->count.plane++;
-	return (EXIT_SUCCESS);
+	return (add_object(rt, &object));
 }
 
 int	parse_cylinder(t_rt *rt, char **line)
 {
-	t_cylinder	cylinder;
-	t_list		*new_cylinder;
+	t_object	object;
+	float		diameter;
 
-	if (parse_vec3(line, cylinder.pos, -FLT_MAX, FLT_MAX))
+	object.type = CYLINDER;
+	if (parse_vec3(line, object.data.cylinder.pos, -FLT_MAX, FLT_MAX))
 		return (EXIT_FAILURE);
-	if (parse_vec3(line, cylinder.axis, -FLT_MAX, FLT_MAX))
+	if (parse_vec3(line, object.data.cylinder.axis, -FLT_MAX, FLT_MAX))
 		return (EXIT_FAILURE);
-	if (parse_value(line, &cylinder.diameter, -FLT_MAX, FLT_MAX))
+	if (kdm_vec3_norm(object.data.cylinder.axis) == 0.0f)
+		return (ft_error("No cylinder orientation !", EXIT_FAILURE));
+	kdm_vec3_normalize(object.data.cylinder.axis);
+	if (parse_value(line, &diameter, -FLT_MAX, FLT_MAX))
 		return (EXIT_FAILURE);
-	if (parse_value(line, &cylinder.height, -FLT_MAX, FLT_MAX))
+	object.data.cylinder.radius = diameter / 2;
+	if (parse_value(line, &object.data.cylinder.height, -FLT_MAX, FLT_MAX))
 		return (EXIT_FAILURE);
-	if (parse_color(line, cylinder.color))
+	if (parse_color(line, object.color))
 		return (EXIT_FAILURE);
-	new_cylinder = ft_lstnew(ft_memdup(&cylinder, sizeof(t_cylinder)));
-	ft_lstadd_front(&rt->cylinder, new_cylinder);
-	rt->count.cylinder++;
-	return (EXIT_SUCCESS);
+	return (add_object(rt, &object));
 }

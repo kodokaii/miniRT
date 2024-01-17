@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/13 22:58:29 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/15 10:00:56 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,17 @@ static int	_check_extension(char *file)
 	return (EXIT_SUCCESS);
 }
 
+static int	_check_essential(t_rt *rt)
+{
+	if (rt->count.ambient < 1)
+		return (ft_error("Missing ambient !", EXIT_FAILURE));
+	if (rt->count.camera < 1)
+		return (ft_error("Missing camera !", EXIT_FAILURE));
+	if (rt->count.light < 1)
+		return (ft_error("Missing light !", EXIT_FAILURE));
+	return (EXIT_SUCCESS);
+}
+
 int	parse_rt(t_rt *rt, char *file)
 {
 	t_buf	line;
@@ -87,5 +98,5 @@ int	parse_rt(t_rt *rt, char *file)
 	}
 	ft_buf_free(&line);
 	ft_close(&fd);
-	return (EXIT_SUCCESS);
+	return (_check_essential(rt));
 }

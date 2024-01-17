@@ -6,13 +6,13 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/13 20:51:11 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/16 15:25:44 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "miniRT.h"
 
-int	ft_pixel(float r, float g, float b, float a)
+int	new_pixel(float r, float g, float b, float a)
 {
 	int	color;
 
@@ -23,7 +23,7 @@ int	ft_pixel(float r, float g, float b, float a)
 	return (color);
 }
 
-void	ft_pixel_iter(mlx_image_t *image, t_mlx *mlx,
+void	pixel_iter(mlx_image_t *image, t_mlx *mlx,
 			int (*f)(float, float, t_mlx *))
 {
 	int		color;
@@ -37,7 +37,7 @@ void	ft_pixel_iter(mlx_image_t *image, t_mlx *mlx,
 		while (y < image->height)
 		{
 			color = (*f)(
-					2 * (float)x / (float)image->width - 1,
+					(2 * (float)x / (float)image->width - 1) * mlx->ratio,
 					2 * (float)y / (float)image->height - 1,
 					mlx);
 			mlx_put_pixel(image, x, y, color);

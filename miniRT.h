@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/13 22:45:56 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/18 00:21:12 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,17 @@
 # include "libft/libft.h"
 # include "kdm/kdm.h"
 
-# define FT_WIDTH		1080
-# define FT_HEIGHT		1080
+# define WIDTH				1080
+# define HEIGHT				1080
+
+# define INVALID_DISTANCE	-FLT_MAX
+
+# define OBJECT_COUNT		3
+
+# define INVALID_OBJECT		-1
+# define SPHERE				0
+# define PLANE				1
+# define CYLINDER			2
 
 typedef struct s_ambient
 {
@@ -43,29 +52,26 @@ typedef struct s_light
 typedef struct s_sphere
 {
 	t_vec3	pos;
-	float	diameter;
-	t_vec3	color;
+	float	radius;
 }	t_sphere;
 
 typedef struct s_plane
 {
 	t_vec3	pos;
 	t_vec3	axis;
-	t_vec3	color;
 }	t_plane;
 
 typedef struct s_cylinder
 {
 	t_vec3	pos;
 	t_vec3	axis;
-	float	diameter;
+	float	radius;
 	float	height;
-	t_vec3	color;
 }	t_cylinder;
 
 typedef struct s_viewplane
 {
-	t_vec3	pos;
+	float	distance;
 	t_vec3	x;
 	t_vec3	y;
 }	t_viewplane;
@@ -75,52 +81,98 @@ typedef struct s_rt_count
 	t_uint	ambient;
 	t_uint	camera;
 	t_uint	light;
-	t_uint	sphere;
-	t_uint	plane;
-	t_uint	cylinder;
+	t_uint	object[OBJECT_COUNT];
 }	t_rt_count;
+
+typedef union u_object_data
+{
+	t_sphere	sphere;
+	t_plane		plane;
+	t_cylinder	cylinder;
+}	t_object_data;
+
+typedef struct s_object
+{
+	int				type;
+	t_vec3			color;
+	t_object_data	data;
+}	t_object;
 
 typedef struct s_rt
 {
 	t_rt_count	count;
+	t_viewplane	viewplane;
 	t_ambient	ambient;
 	t_camera	camera;
 	t_light		light;
-	t_list		*sphere;
-	t_list		*plane;
-	t_list		*cylinder;
+	t_list		*object;
 }	t_rt;
 
 typedef struct s_mlx
 {
 	mlx_t		*win;
 	mlx_image_t	*image;
+	float		ratio;
 	t_rt		rt;
 }	t_mlx;
 
-int		parse_value(char **str, float *value, float min, float max);
-int		parse_vec3(char **str, t_vec3 vec, float min, float max);
-int		parse_color(char **str, t_vec3 color_vec);
+typedef struct t_touch
+{
+	t_object	*object;
+	t_vec3		point;
+	t_vec3		normal;
+}	t_touch;
 
-int		parse_ambient(t_rt *rt, char **line);
-int		parse_camera(t_rt *rt, char **line);
-int		parse_light(t_rt *rt, char **line);
+typedef struct s_phong
+{
+	t_vec3	ambient;
+	t_vec3	diffuse;
+	t_vec3	specular;
+	t_vec3	light_dir;
+}	t_phong;
 
-int		parse_sphere(t_rt *rt, char **line);
-int		parse_plane(t_rt *rt, char **line);
-int		parse_cylinder(t_rt *rt, char **line);
+int			parse_value(char **str, float *value, float min, float max);
+int			parse_vec3(char **str, t_vec3 vec, float min, float max);
+int			parse_color(char **str, t_vec3 color_vec);
+int			add_object(t_rt *rt, t_object *object);
 
-int		parse_rt(t_rt *rt, char *file);
+int			parse_ambient(t_rt *rt, char **line);
+int			parse_camera(t_rt *rt, char **line);
+int			parse_light(t_rt *rt, char **line);
 
-void	ft_draw(void *param);
+int			parse_sphere(t_rt *rt, char **line);
+int			parse_plane(t_rt *rt, char **line);
+int			parse_cylinder(t_rt *rt, char **line);
 
-void	ft_resize_hook(int width, int heigth, void *param);
-void	ft_scroll_hook(double xdelta, double ydelta, void *param);
-void	ft_key_hook(mlx_key_data_t keydata, void *param);
+int			parse_rt(t_rt *rt, char *file);
+void		init_viewplane(t_rt *rt);
 
-void	rt_cleanup(t_mlx *mlx);
+void		draw_frame(void *param);
 
-int		ft_pixel(float r, float g, float b, float a);
-void	ft_pixel_iter(mlx_image_t *image, t_mlx *mlx,
-			int (*f)(float, float, t_mlx *));
+void		get_light_phong(t_vec3 light, t_touch *touch, t_rt *rt);
+
+void		normal_sphere(t_vec3 normal, t_vec3 point, t_object *object);
+void		normal_plane(t_vec3 normal, t_vec3 point, t_object *object);
+void		normal_cylinder(t_vec3 normal, t_vec3 point, t_object *object);
+void		normal_object(t_vec3 normal, t_vec3 point, t_object *object);
+
+int			ray_sphere(t_vec3 origin, t_vec3 direction, float *d,
+				t_object *object);
+int			ray_plane(t_vec3 origin, t_vec3 direction, float *d,
+				t_object *object);
+int			ray_cylinder(t_vec3 origin, t_vec3 direction, float *d,
+				t_object *object);
+t_object	*raytracing(t_vec3 origin, t_vec3 direction, float *d, t_rt *rt);
+
+void		get_point(t_vec3 point, t_vec3 origin,
+				t_vec3 direction, float distance);
+
+void		resize_hook(int width, int heigth, void *param);
+void		key_hook(mlx_key_data_t keydata, void *param);
+
+void		rt_cleanup(t_mlx *mlx);
+
+int			new_pixel(float r, float g, float b, float a);
+void		pixel_iter(mlx_image_t *image, t_mlx *mlx,
+				int (*f)(float, float, t_mlx *));
 #endif
