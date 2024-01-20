@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/18 00:21:12 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/20 01:35:26 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@
 # include "libft/libft.h"
 # include "kdm/kdm.h"
 
-# define WIDTH				1080
-# define HEIGHT				1080
+# define WIDTH				512
+# define HEIGHT				512
 
 # define INVALID_DISTANCE	-FLT_MAX
 
@@ -28,6 +28,15 @@
 # define SPHERE				0
 # define PLANE				1
 # define CYLINDER			2
+
+# define SPEED				1.5f
+# define SENSITIVITY		0.7f
+
+typedef enum s_side
+{
+	OUTSIDE,
+	INSIDE,
+}	t_side;
 
 typedef struct s_ambient
 {
@@ -40,6 +49,8 @@ typedef struct s_camera
 	t_vec3	pos;
 	t_vec3	axis;
 	float	fov;
+	float	yaw;
+	float	pitch;
 }	t_camera;
 
 typedef struct s_light
@@ -112,15 +123,25 @@ typedef struct s_mlx
 {
 	mlx_t		*win;
 	mlx_image_t	*image;
+	t_vec2		mouse_pos;
 	float		ratio;
 	t_rt		rt;
 }	t_mlx;
 
-typedef struct t_touch
+typedef struct s_ray
 {
 	t_object	*object;
-	t_vec3		point;
-	t_vec3		normal;
+	t_vec3		origin;
+	t_vec3		direction;
+}	t_ray;
+
+typedef struct s_touch
+{
+	t_ray	ray;
+	float	distance;
+	t_side	side;		
+	t_vec3	point;
+	t_vec3	normal;
 }	t_touch;
 
 typedef struct s_phong
@@ -128,7 +149,7 @@ typedef struct s_phong
 	t_vec3	ambient;
 	t_vec3	diffuse;
 	t_vec3	specular;
-	t_vec3	light_dir;
+	t_touch	touch;
 }	t_phong;
 
 int			parse_value(char **str, float *value, float min, float max);
@@ -145,34 +166,28 @@ int			parse_plane(t_rt *rt, char **line);
 int			parse_cylinder(t_rt *rt, char **line);
 
 int			parse_rt(t_rt *rt, char *file);
-void		init_viewplane(t_rt *rt);
 
 void		draw_frame(void *param);
 
 void		get_light_phong(t_vec3 light, t_touch *touch, t_rt *rt);
 
-void		normal_sphere(t_vec3 normal, t_vec3 point, t_object *object);
-void		normal_plane(t_vec3 normal, t_vec3 point, t_object *object);
-void		normal_cylinder(t_vec3 normal, t_vec3 point, t_object *object);
-void		normal_object(t_vec3 normal, t_vec3 point, t_object *object);
-
-int			ray_sphere(t_vec3 origin, t_vec3 direction, float *d,
-				t_object *object);
-int			ray_plane(t_vec3 origin, t_vec3 direction, float *d,
-				t_object *object);
-int			ray_cylinder(t_vec3 origin, t_vec3 direction, float *d,
-				t_object *object);
-t_object	*raytracing(t_vec3 origin, t_vec3 direction, float *d, t_rt *rt);
+int			ray_sphere(t_ray *ray, t_touch *touch);
+int			ray_plane(t_ray *ray, t_touch *touch);
+int			ray_cylinder(t_ray *ray, t_touch *touch);
+int			raytracing(t_vec3 origin, t_vec3 direction,
+				t_touch *touch, t_rt *rt);
 
 void		get_point(t_vec3 point, t_vec3 origin,
 				t_vec3 direction, float distance);
 
 void		resize_hook(int width, int heigth, void *param);
 void		key_hook(mlx_key_data_t keydata, void *param);
+void		move_hook(void *param);
 
 void		rt_cleanup(t_mlx *mlx);
 
-int			new_pixel(float r, float g, float b, float a);
+void		get_mouse_pos(t_vec2 mouse_pos, t_mlx *mlx);
+int			new_pixel(t_vec3 color, float a);
 void		pixel_iter(mlx_image_t *image, t_mlx *mlx,
 				int (*f)(float, float, t_mlx *));
 #endif

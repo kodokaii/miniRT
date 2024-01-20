@@ -6,44 +6,36 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/17 22:50:55 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/18 12:27:58 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../miniRT.h"
 
-void	normal_object(t_vec3 normal, t_vec3 point, t_object *object)
+int	raytracing(t_vec3 origin, t_vec3 direction, t_touch *touch, t_rt *rt)
 {
-	static void	(*normal_func[])(t_vec3, t_vec3, t_object*)
-		= {normal_sphere, normal_plane, normal_cylinder};
-
-	normal_func[object->type](normal, point, object);
-}
-
-t_object	*raytracing(t_vec3 origin, t_vec3 direction, float *d, t_rt *rt)
-{
-	static int	(*ray_func[])(t_vec3, t_vec3, float*, t_object*)
+	static int	(*ray_func[])(t_ray *, t_touch *)
 		= {ray_sphere, ray_plane, ray_cylinder};
+	t_touch		current_touch;
 	t_list		*current;
-	float		distance;
-	t_object	*object;
-	t_object	*best_object;
+	t_ray		ray;
 
-	*d = FLT_MAX;
-	best_object = NULL;
 	current = rt->object;
+	touch->distance = FLT_MAX;
+	touch->ray.object = NULL;
+	kdm_vec3_cpy(ray.origin, origin);
+	kdm_vec3_normalize_to(ray.direction, direction);
 	while (current)
 	{
-		object = current->data;
-		if (!ray_func[object->type](origin, direction, &distance, object))
+		ray.object = current->data;
+		if (!ray_func[ray.object->type](&ray, &current_touch))
 		{
-			if (distance <= *d)
-			{
-				*d = distance;
-				best_object = object;
-			}
+			if (current_touch.distance <= touch->distance)
+				*touch = current_touch;
 		}
 		current = current->next;
 	}
-	return (best_object);
+	if (!touch->ray.object)
+		return (EXIT_FAILURE);
+	return (EXIT_SUCCESS);
 }

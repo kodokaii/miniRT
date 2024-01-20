@@ -6,21 +6,31 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/16 15:25:44 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/20 01:13:15 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "miniRT.h"
 
-int	new_pixel(float r, float g, float b, float a)
+void	get_mouse_pos(t_vec2 mouse_pos, t_mlx *mlx)
 {
-	int	color;
+	int	x;
+	int	y;
 
-	color = ((int)roundf(fmin(r, 1.0f) * 0xff)) << 24;
-	color |= ((int)roundf(fmin(g, 1.0f) * 0xff)) << 16;
-	color |= ((int)roundf(fmin(b, 1.0f) * 0xff)) << 8;
-	color |= (int)roundf(fmin(a, 1.0f) * 0xff);
-	return (color);
+	mlx_get_mouse_pos(mlx->win, &x, &y);
+	mouse_pos[X] = (2 * (float)x / (float)mlx->win->width - 1) * mlx->ratio;
+	mouse_pos[Y] = (2 * (float)y / (float)mlx->win->height - 1);
+}
+
+int	new_pixel(t_vec3 color, float a)
+{
+	int	pixel;
+
+	pixel = ((int)roundf(kdm_clamp(color[X], 0.0f, 1.0f) * 0xff)) << 24;
+	pixel |= ((int)roundf(kdm_clamp(color[Y], 0.0f, 1.0f) * 0xff)) << 16;
+	pixel |= ((int)roundf(kdm_clamp(color[Z], 0.0f, 1.0f) * 0xff)) << 8;
+	pixel |= ((int)roundf(kdm_clamp(a, 0.0f, 1.0f) * 0xff));
+	return (pixel);
 }
 
 void	pixel_iter(mlx_image_t *image, t_mlx *mlx,

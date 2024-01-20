@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/15 11:12:13 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/19 23:37:32 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ int	parse_camera(t_rt *rt, char **line)
 	if (kdm_vec3_norm(rt->camera.axis) == 0.0f)
 		return (ft_error("No camera orientation !", EXIT_FAILURE));
 	kdm_vec3_normalize(rt->camera.axis);
+	rt->camera.yaw = atan2f(rt->camera.axis[Y], rt->camera.axis[X]);
+	rt->camera.pitch = asinf(rt->camera.axis[Z]);
 	if (parse_value(line, &rt->camera.fov, 0.0f, 180.0f))
 		return (EXIT_FAILURE);
 	if (rt->camera.fov == 0.0f)

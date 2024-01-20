@@ -30,8 +30,7 @@ SRC 		= cleanup.c\
 			  parse_utils.c\
 			  parsing.c\
 			  phong.c\
-			  utils.c\
-			  viewplane.c
+			  utils.c
 
 OBJ 		= $(SRC:.c=.o)
 
@@ -43,7 +42,6 @@ $(NAME): $(LIBMLX) $(LIBFT) $(LIBKDM) $(OBJ)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LIBMLX) $(LIBFT) $(LIBKDM) $(CLINKS)
 
 $(LIBMLX): $(MLX)
-	cmake $(MLX) -B $(MLX)	
 	$(MAKE) -C $(MLX)
 
 $(LIBFT): $(FT)
@@ -54,6 +52,7 @@ $(LIBKDM): $(KDM)
 
 $(MLX):
 	$(CLONE) https://github.com/kodokaii/MLX42.git $(MLX)
+	cmake $(MLX) -B $(MLX)	
 
 $(FT):
 	$(CLONE) https://github.com/kodokaii/libft_plus_plus.git $(FT)
