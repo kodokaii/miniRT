@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/19 21:06:28 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/20 02:39:26 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ void	get_light_phong(t_vec3 light, t_touch *touch, t_rt *rt)
 		kdm_vec3_scale(phong.diffuse, rt->light.color, fmax(
 				-kdm_vec3_dot(touch->normal, phong.touch.ray.direction), 0.0f));
 		kdm_vec3_scale(phong.diffuse, phong.diffuse, rt->light.ratio
-			/ (0.0001f + 0.0001f * phong.touch.distance + 0.0001f * kdm_square(phong.touch.distance)));
+			/ (0.0001f + 0.0001f * phong.touch.distance + 0.0001f
+				* kdm_square(phong.touch.distance)));
 	}
 	else
 		kdm_vec3_zero(phong.diffuse);

@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/20 01:33:42 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/20 02:37:56 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,8 @@ void	key_hook(mlx_key_data_t keydata, void *param)
 		mlx_close_window(mlx->win);
 }
 
-void	move_camera(t_vec2 mouse_pos, t_mlx *mlx)
+void	rotate_camera(t_vec2 mouse_pos, t_mlx *mlx)
 {
-	t_vec3	right;
-	t_vec3	front;
-	t_vec3	top;
-
 	mlx->rt.camera.yaw = mlx->rt.camera.yaw
 		+ (mlx->mouse_pos[X] - mouse_pos[X]) * SENSITIVITY;
 	mlx->rt.camera.pitch = kdm_clamp(mlx->rt.camera.pitch
@@ -46,6 +42,14 @@ void	move_camera(t_vec2 mouse_pos, t_mlx *mlx)
 	mlx->rt.camera.axis[Y] = cosf(mlx->rt.camera.pitch)
 		* sinf(mlx->rt.camera.yaw);
 	mlx->rt.camera.axis[Z] = sinf(mlx->rt.camera.pitch);
+}
+
+void	move_camera(t_mlx *mlx)
+{
+	t_vec3	right;
+	t_vec3	front;
+	t_vec3	top;
+
 	kdm_vec3(top, (t_vec3){0.0f, 0.0f, 1.0f});
 	kdm_vec3_crossn(right, mlx->rt.camera.axis, top);
 	kdm_vec3_crossn(front, top, right);
@@ -73,6 +77,7 @@ void	move_hook(void *param)
 
 	mlx = param;
 	get_mouse_pos(mouse_pos, mlx);
-	move_camera(mouse_pos, mlx);
+	rotate_camera(mouse_pos, mlx);
+	move_camera(mlx);
 	kdm_vec2_cpy(mlx->mouse_pos, mouse_pos);
 }
