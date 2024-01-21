@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/18 15:44:58 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/21 13:14:44 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ static int	_update_touch(t_ray *ray, float x, t_touch *touch)
 		return (EXIT_FAILURE);
 	get_point(touch->point, ray->origin, ray->direction, touch->distance);
 	_set_normal(ray, touch);
+	shift_point(touch->point, touch->normal);
 	return (EXIT_SUCCESS);
 }
 

@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/19 23:37:32 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/21 14:54:23 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,14 +48,16 @@ int	parse_camera(t_rt *rt, char **line)
 
 int	parse_light(t_rt *rt, char **line)
 {
-	if (0 < rt->count.light)
-		return (ft_error("Too many light !", EXIT_FAILURE));
-	if (parse_vec3(line, rt->light.pos, -FLT_MAX, FLT_MAX))
+	t_light	light;
+
+	if (parse_vec3(line, light.pos, -FLT_MAX, FLT_MAX))
 		return (EXIT_FAILURE);
-	if (parse_value(line, &rt->light.ratio, 0.0, 1.0f))
+	if (parse_value(line, &light.ratio, 0.0, 1.0f))
 		return (EXIT_FAILURE);
-	if (parse_color(line, rt->light.color))
+	if (parse_color(line, light.color))
 		return (EXIT_FAILURE);
+	ft_lstadd_front(&rt->light,
+		ft_lstnew(ft_memdup(&light, sizeof(t_light))));
 	rt->count.light++;
 	return (EXIT_SUCCESS);
 }

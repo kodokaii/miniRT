@@ -4,7 +4,7 @@ CC 			= cc
 RM			= rm -f
 CLONE 		= git clone --depth=1
 
-CFLAGS 		+= -Wall -Wextra -Werror #-O3
+CFLAGS 		+= -Wall -Wextra -Werror #-Ofast
 CLINKS		= -ldl -lglfw -pthread -lm
 
 MLX			= minilibx

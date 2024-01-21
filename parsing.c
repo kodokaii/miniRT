@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/19 21:18:24 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/21 14:35:27 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static int	_parse_line(t_rt *rt, char *line)
 		error = parse_ambient(rt, &line);
 	else if (!_parse_identifier(&line, "C"))
 		error = parse_camera(rt, &line);
-	else if (!_parse_identifier(&line, "L"))
+	else if (!_parse_identifier(&line, "l"))
 		error = parse_light(rt, &line);
 	else if (!_parse_identifier(&line, "sp"))
 		error = parse_sphere(rt, &line);

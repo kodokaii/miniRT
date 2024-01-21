@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/20 01:35:26 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/21 16:36:05 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@
 
 # define SPEED				1.5f
 # define SENSITIVITY		0.7f
+
+# define BIAS				0.001f
 
 typedef enum s_side
 {
@@ -105,6 +107,7 @@ typedef union u_object_data
 typedef struct s_object
 {
 	int				type;
+	float			reflect;
 	t_vec3			color;
 	t_object_data	data;
 }	t_object;
@@ -115,7 +118,7 @@ typedef struct s_rt
 	t_viewplane	viewplane;
 	t_ambient	ambient;
 	t_camera	camera;
-	t_light		light;
+	t_list		*light;
 	t_list		*object;
 }	t_rt;
 
@@ -146,6 +149,14 @@ typedef struct s_touch
 
 typedef struct s_phong
 {
+	float	distance;
+	float	attenuation;
+	float	ambient_ratio;
+	float	diffuse_ratio;
+	float	specular_ratio;
+	t_vec3	light_dir;
+	t_vec3	view_dir;
+	t_vec3	reflect_dir;
 	t_vec3	ambient;
 	t_vec3	diffuse;
 	t_vec3	specular;
@@ -179,6 +190,7 @@ int			raytracing(t_vec3 origin, t_vec3 direction,
 
 void		get_point(t_vec3 point, t_vec3 origin,
 				t_vec3 direction, float distance);
+void		shift_point(t_vec3 point, t_vec3 normal);
 
 void		resize_hook(int width, int heigth, void *param);
 void		key_hook(mlx_key_data_t keydata, void *param);

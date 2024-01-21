@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/18 12:27:58 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/21 13:10:36 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,11 @@ int	raytracing(t_vec3 origin, t_vec3 direction, t_touch *touch, t_rt *rt)
 	t_ray		ray;
 
 	current = rt->object;
-	touch->distance = FLT_MAX;
-	touch->ray.object = NULL;
 	kdm_vec3_cpy(ray.origin, origin);
 	kdm_vec3_normalize_to(ray.direction, direction);
+	touch->ray = ray;
+	touch->distance = FLT_MAX;
+	touch->ray.object = NULL;
 	while (current)
 	{
 		ray.object = current->data;

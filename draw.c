@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/20 02:35:52 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/21 16:08:58 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,34 +22,36 @@ static void	_direction(t_vec3 direction, float x, float y, t_rt *rt)
 	kdm_vec3_scale(y_vec, rt->viewplane.y, y);
 	kdm_vec3_scale(z_vec, rt->camera.axis, rt->viewplane.distance);
 	kdm_vec3_addv(direction, 3, x_vec, y_vec, z_vec);
-	kdm_vec3_normalize(direction);
+}
+
+static void	_sky_color(t_vec3 color, t_touch *touch)
+{
+	kdm_vec3_lerp(color,
+		(t_vec3){0.5f, 0.7f, 1.0f},
+		(touch->ray.direction[Z] + 1.0f) / 2,
+		(t_vec3){1.0f, 1.0f, 1.0f});
 }
 
 static void	_get_color(t_vec3 color, t_touch *touch, t_rt *rt, t_uint iter)
 {
 	t_vec3	light;	
 	t_vec3	color_object;
-	t_vec3	reflect_point;
 	t_vec3	reflect_dir;
 	t_touch	reflect_touch;
 
-	if (iter)
+	if (!iter)
+		kdm_vec3(color, (t_vec3){1.0f, 1.0f, 1.0f});
+	else if (!touch->ray.object)
+		_sky_color(color, touch);
+	else
 	{
 		get_light_phong(light, touch, rt);
 		kdm_vec3_mul(color_object, light, touch->ray.object->color);
-		if (touch->ray.object->type == SPHERE)
-		{
-			kdm_vec3_scale(reflect_point, touch->normal, 0.001f);
-			kdm_vec3_add(reflect_point, reflect_point, touch->point);
-			kdm_vec3_reflect(reflect_dir, touch->ray.direction, touch->normal);
-			if (!raytracing(reflect_point, reflect_dir, &reflect_touch, rt))
-			{
-				_get_color(color, &reflect_touch, rt, iter - 1);
-				kdm_vec3_lerp(color, color_object, 0.8f, color);
-			}
-		}
-		else
-			kdm_vec3_cpy(color, color_object);
+		kdm_vec3_reflect(reflect_dir, touch->ray.direction, touch->normal);
+		raytracing(touch->point, reflect_dir, &reflect_touch, rt);
+		_get_color(color, &reflect_touch, rt, iter - 1);
+		kdm_vec3_lerp(color, color,
+			touch->ray.object->reflect, color_object);
 	}
 }
 
@@ -60,14 +62,9 @@ static int	_draw_pixel(float x, float y, t_mlx *mlx)
 	t_vec3		color;
 
 	_direction(direction, x, y, &mlx->rt);
-	if (!raytracing(mlx->rt.camera.pos, direction, &touch, &mlx->rt))
-	{
-		kdm_vec3(color, (t_vec3){0.0f, 0.0f, 0.0f});
-		_get_color(color, &touch, &mlx->rt, 10);
-		return (new_pixel(color, 1.0f));
-	}
-	else
-		return (0X000000FF);
+	raytracing(mlx->rt.camera.pos, direction, &touch, &mlx->rt);
+	_get_color(color, &touch, &mlx->rt, 8);
+	return (new_pixel(color, 1.0f));
 }
 
 void	draw_frame(void *param)

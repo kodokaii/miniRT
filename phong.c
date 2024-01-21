@@ -6,40 +6,65 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/20 02:39:26 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/21 17:57:01 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "miniRT.h"
 
-t_bool	is_lighting(t_touch *touch, t_phong *phong, t_rt *rt)
+static void	_get_params(t_phong *phong, t_light *light,
+			t_touch *touch, t_rt *rt)
 {
-	t_vec3	direction;
-
-	kdm_vec3_sub(direction, touch->point, rt->light.pos);
-	kdm_vec3_normalize(direction);
-	if (raytracing(rt->light.pos, direction, &phong->touch, rt))
-		return (FT_FALSE);
-	if (phong->touch.ray.object != touch->ray.object
-		|| phong->touch.side != touch->side)
-		return (FT_FALSE);
-	return (FT_TRUE);
+	phong->distance = kdm_vec3_distance(touch->point, light->pos);
+	phong->attenuation = light->ratio / (0.0001f
+			+ 0.0001f * phong->distance
+			+ 0.0001f * kdm_square(phong->distance));
+	kdm_vec3_sub(phong->light_dir, light->pos, touch->point);
+	kdm_vec3_sub(phong->view_dir, rt->camera.pos, touch->point);
+	kdm_vec3_reflect(phong->reflect_dir, phong->light_dir, touch->normal);
+	kdm_vec3_normalize(phong->light_dir);
+	kdm_vec3_normalize(phong->view_dir);
+	kdm_vec3_normalize(phong->reflect_dir);
+	kdm_vec3_zero(phong->ambient);
+	kdm_vec3_zero(phong->diffuse);
+	kdm_vec3_zero(phong->specular);
 }
 
-void	get_light_phong(t_vec3 light, t_touch *touch, t_rt *rt)
+static void	_get_direct_light(t_vec3 direct_light, t_light *light,
+			t_touch *touch, t_rt *rt)
 {
 	t_phong	phong;
 
-	kdm_vec3_scale(phong.ambient, rt->ambient.color, rt->ambient.ratio);
-	if (is_lighting(touch, &phong, rt))
+	_get_params(&phong, light, touch, rt);
+	if (raytracing(touch->point, phong.light_dir, &phong.touch, rt)
+		|| phong.distance < phong.touch.distance)
 	{
-		kdm_vec3_scale(phong.diffuse, rt->light.color, fmax(
-				-kdm_vec3_dot(touch->normal, phong.touch.ray.direction), 0.0f));
-		kdm_vec3_scale(phong.diffuse, phong.diffuse, rt->light.ratio
-			/ (0.0001f + 0.0001f * phong.touch.distance + 0.0001f
-				* kdm_square(phong.touch.distance)));
+		phong.diffuse_ratio = kdm_vec3_dot(touch->normal, phong.light_dir);
+		kdm_vec3_scale(phong.diffuse, light->color,
+			fmaxf(phong.diffuse_ratio, 0.0f));
+		phong.specular_ratio = -kdm_vec3_dot(phong.view_dir, phong.reflect_dir);
+		kdm_vec3_scale(phong.specular, light->color,
+			powf(fmaxf(phong.specular_ratio, 0.0f), 4));
 	}
-	else
-		kdm_vec3_zero(phong.diffuse);
-	kdm_vec3_addv(light, 2, phong.ambient, phong.diffuse);
+	kdm_vec3_addv(direct_light, 3,
+		phong.ambient, phong.diffuse, phong.specular);
+	kdm_vec3_scale(direct_light, direct_light, phong.attenuation);
+}
+
+void	get_light_phong(t_vec3 all_light, t_touch *touch, t_rt *rt)
+{
+	t_list	*current;
+	t_vec3	direct_light;
+
+	current = rt->light;
+	kdm_vec3_scale(all_light, rt->ambient.color, rt->ambient.ratio);
+	while (current)
+	{
+		_get_direct_light(direct_light, current->data, touch, rt);
+		kdm_vec3_add(all_light, all_light, direct_light);
+		current = current->next;
+	}
+	all_light[X] = fminf(all_light[X], 1.0f);
+	all_light[Y] = fminf(all_light[Y], 1.0f);
+	all_light[Z] = fminf(all_light[Z], 1.0f);
 }
