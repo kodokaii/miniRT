@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/21 17:57:01 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/23 13:20:43 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static void	_get_direct_light(t_vec3 direct_light, t_light *light,
 		kdm_vec3_scale(phong.specular, light->color,
 			powf(fmaxf(phong.specular_ratio, 0.0f), 4));
 	}
-	kdm_vec3_addv(direct_light, 3,
+	kdm_vec3_addv(direct_light, 2,
 		phong.ambient, phong.diffuse, phong.specular);
 	kdm_vec3_scale(direct_light, direct_light, phong.attenuation);
 }

@@ -1,61 +1,66 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   plane.c                                            :+:      :+:    :+:   */
+/*   touch_cylinder.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/21 13:14:44 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/23 14:21:47 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../miniRT.h"
 
-static int	_set_distance(t_ray *ray, float x, t_touch *touch)
+static void	_set_uv(t_ray *ray, t_touch *touch)
 {
-	if (x < 0.0f)
+	t_vec3	diff;
+
+	kdm_vec3_sub(diff, touch->point, touch->ray.object->data.cylinder.pos);
+	touch->uv[X] = 0.5 + atan2f(touch->point[X], touch->point[Z]) / TAU;
+	touch->uv[Y] = kdm_vec3_dot(diff, ray->object->data.cylinder.axis)
+		/ (2 * ray->object->data.cylinder.radius);
+}
+
+static int	_set_distance(float x[2], t_touch *touch)
+{
+	if (x[0] < 0.0f && x[1] < 0.0f)
 		return (EXIT_FAILURE);
-	else
-		touch->distance = x;
-	if (kdm_vec3_dot(ray->direction, ray->object->data.plane.axis) < 0.0f)
-		touch->side = OUTSIDE;
-	else
+	else if (x[0] < 0.0f)
+	{
+		touch->distance = x[1];
 		touch->side = INSIDE;
+	}
+	else
+	{
+		touch->distance = x[0];
+		touch->side = OUTSIDE;
+	}
 	return (EXIT_SUCCESS);
 }
 
 static void	_set_normal(t_ray *ray, t_touch *touch)
 {
-	kdm_vec3_cpy(touch->normal, ray->object->data.plane.axis);
+	t_vec3	diff;
+	t_vec3	height;
+
+	kdm_vec3_sub(diff, touch->point, ray->object->data.cylinder.pos);
+	kdm_vec3_scale(height, ray->object->data.cylinder.axis,
+		kdm_vec3_dot(diff, ray->object->data.cylinder.axis));
+	kdm_vec3_sub(touch->normal, diff, height);
 	if (touch->side == INSIDE)
 		kdm_vec3_negate(touch->normal);
 	kdm_vec3_normalize(touch->normal);
 }
 
-static int	_update_touch(t_ray *ray, float x, t_touch *touch)
+int	touch_cylinder(t_ray *ray, float x[2], t_touch *touch)
 {
 	touch->ray = *ray;
-	if (_set_distance(ray, x, touch))
+	if (_set_distance(x, touch))
 		return (EXIT_FAILURE);
 	get_point(touch->point, ray->origin, ray->direction, touch->distance);
 	_set_normal(ray, touch);
+	_set_uv(ray, touch);
 	shift_point(touch->point, touch->normal);
 	return (EXIT_SUCCESS);
-}
-
-int	ray_plane(t_ray *ray, t_touch *touch)
-{
-	float	b;
-	float	c;
-	float	x;
-	t_vec3	diff;
-
-	kdm_vec3_sub(diff, ray->object->data.plane.pos, ray->origin);
-	b = kdm_vec3_dot(ray->direction, ray->object->data.plane.axis);
-	c = kdm_vec3_dot(diff, ray->object->data.plane.axis);
-	if (b == 0.0f)
-		return (EXIT_FAILURE);
-	x = c / b;
-	return (_update_touch(ray, x, touch));
 }

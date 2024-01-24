@@ -4,7 +4,7 @@ CC 			= cc
 RM			= rm -f
 CLONE 		= git clone --depth=1
 
-CFLAGS 		+= -Wall -Wextra -Werror #-Ofast
+CFLAGS 		+= -Wall -Wextra -Werror -O3
 CLINKS		= -ldl -lglfw -pthread -lm
 
 MLX			= minilibx
@@ -22,9 +22,12 @@ SRC 		= cleanup.c\
 			  miniRT.c\
 			  mlx_utils.c\
 			  object/all.c\
-			  object/cylinder.c\
-			  object/plane.c\
-			  object/sphere.c\
+			  object/ray_cylinder.c\
+			  object/ray_plane.c\
+			  object/ray_sphere.c\
+			  object/touch_cylinder.c\
+			  object/touch_plane.c\
+			  object/touch_sphere.c\
 			  parse_elements.c\
 			  parse_objects.c\
 			  parse_utils.c\

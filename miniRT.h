@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/21 16:36:05 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/23 13:15:26 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,6 +145,7 @@ typedef struct s_touch
 	t_side	side;		
 	t_vec3	point;
 	t_vec3	normal;
+	t_vec2	uv;
 }	t_touch;
 
 typedef struct s_phong
@@ -187,6 +188,10 @@ int			ray_plane(t_ray *ray, t_touch *touch);
 int			ray_cylinder(t_ray *ray, t_touch *touch);
 int			raytracing(t_vec3 origin, t_vec3 direction,
 				t_touch *touch, t_rt *rt);
+
+int			touch_sphere(t_ray *ray, float x[2], t_touch *touch);
+int			touch_cylinder(t_ray *ray, float x[2], t_touch *touch);
+int			touch_plane(t_ray *ray, float x, t_touch *touch);
 
 void		get_point(t_vec3 point, t_vec3 origin,
 				t_vec3 direction, float distance);
