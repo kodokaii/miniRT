@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/23 14:21:47 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/29 21:29:46 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,15 @@
 static void	_set_uv(t_ray *ray, t_touch *touch)
 {
 	t_vec3	diff;
+	float	x;
+	float	y;
 
-	kdm_vec3_sub(diff, touch->point, touch->ray.object->data.cylinder.pos);
-	touch->uv[X] = 0.5 + atan2f(touch->point[X], touch->point[Z]) / TAU;
-	touch->uv[Y] = kdm_vec3_dot(diff, ray->object->data.cylinder.axis)
-		/ (2 * ray->object->data.cylinder.radius);
+	kdm_vec3_sub(diff, touch->point, ray->object->pos);
+	x = kdm_vec3_dot(diff, ray->object->x);
+	y = kdm_vec3_dot(diff, ray->object->y);
+	touch->uv[X] = 0.5f + atan2f(y, x) / TAU;
+	touch->uv[Y] = fmodf(kdm_vec3_dot(diff, ray->object->z)
+			/ (ray->object->width * PI), 1.0f);
 }
 
 static int	_set_distance(float x[2], t_touch *touch)
@@ -44,9 +48,9 @@ static void	_set_normal(t_ray *ray, t_touch *touch)
 	t_vec3	diff;
 	t_vec3	height;
 
-	kdm_vec3_sub(diff, touch->point, ray->object->data.cylinder.pos);
-	kdm_vec3_scale(height, ray->object->data.cylinder.axis,
-		kdm_vec3_dot(diff, ray->object->data.cylinder.axis));
+	kdm_vec3_sub(diff, touch->point, ray->object->pos);
+	kdm_vec3_scale(height, ray->object->z,
+		kdm_vec3_dot(diff, ray->object->z));
 	kdm_vec3_sub(touch->normal, diff, height);
 	if (touch->side == INSIDE)
 		kdm_vec3_negate(touch->normal);

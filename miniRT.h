@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/23 13:15:26 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/29 21:24:05 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,26 +62,6 @@ typedef struct s_light
 	t_vec3	color;
 }	t_light;
 
-typedef struct s_sphere
-{
-	t_vec3	pos;
-	float	radius;
-}	t_sphere;
-
-typedef struct s_plane
-{
-	t_vec3	pos;
-	t_vec3	axis;
-}	t_plane;
-
-typedef struct s_cylinder
-{
-	t_vec3	pos;
-	t_vec3	axis;
-	float	radius;
-	float	height;
-}	t_cylinder;
-
 typedef struct s_viewplane
 {
 	float	distance;
@@ -97,19 +77,17 @@ typedef struct s_rt_count
 	t_uint	object[OBJECT_COUNT];
 }	t_rt_count;
 
-typedef union u_object_data
-{
-	t_sphere	sphere;
-	t_plane		plane;
-	t_cylinder	cylinder;
-}	t_object_data;
-
 typedef struct s_object
 {
 	int				type;
 	float			reflect;
+	float			width;
+	float			height;
+	t_vec3			pos;
+	t_vec3			x;
+	t_vec3			y;
+	t_vec3			z;
 	t_vec3			color;
-	t_object_data	data;
 }	t_object;
 
 typedef struct s_rt

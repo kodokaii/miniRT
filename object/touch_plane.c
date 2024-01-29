@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/23 13:13:44 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/29 21:45:53 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,11 @@
 
 static void	_set_uv(t_ray *ray, t_touch *touch)
 {
-	(void)ray;
-	touch->uv[X] = 0.0f;
-	touch->uv[Y] = 0.0f;
+	t_vec3	diff;
+
+	kdm_vec3_sub(diff, touch->point, ray->object->pos);
+	touch->uv[X] = fmodf(fabs(kdm_vec3_dot(diff, ray->object->x)) / 100.0f, 1.0f);
+	touch->uv[Y] = fmodf(fabs(kdm_vec3_dot(diff, ray->object->y)) / 100.0f, 1.0f);
 }
 
 static int	_set_distance(t_ray *ray, float x, t_touch *touch)
@@ -25,7 +27,7 @@ static int	_set_distance(t_ray *ray, float x, t_touch *touch)
 		return (EXIT_FAILURE);
 	else
 		touch->distance = x;
-	if (kdm_vec3_dot(ray->direction, ray->object->data.plane.axis) < 0.0f)
+	if (kdm_vec3_dot(ray->direction, ray->object->z) < 0.0f)
 		touch->side = OUTSIDE;
 	else
 		touch->side = INSIDE;
@@ -34,7 +36,7 @@ static int	_set_distance(t_ray *ray, float x, t_touch *touch)
 
 static void	_set_normal(t_ray *ray, t_touch *touch)
 {
-	kdm_vec3_cpy(touch->normal, ray->object->data.plane.axis);
+	kdm_vec3_cpy(touch->normal, ray->object->z);
 	if (touch->side == INSIDE)
 		kdm_vec3_negate(touch->normal);
 	kdm_vec3_normalize(touch->normal);

@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/23 14:16:52 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/29 21:37:14 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,11 @@ static void	_set_uv(t_ray *ray, t_touch *touch)
 {
 	t_vec3	diff;
 
-	kdm_vec3_sub(diff, touch->point, ray->object->data.sphere.pos);
+	kdm_vec3_sub(diff, touch->point, ray->object->pos);
 	touch->uv[X] = 0.5
 		+ (atan2f(diff[Y], diff[X]) / TAU);
 	touch->uv[Y] = 0.5
-		- (asinf(diff[Z] / ray->object->data.sphere.radius) / PI);
+		- (asinf(2 * diff[Z] / ray->object->width) / PI);
 }
 
 static int	_set_distance(float x[2], t_touch *touch)
@@ -42,7 +42,7 @@ static int	_set_distance(float x[2], t_touch *touch)
 
 static void	_set_normal(t_ray *ray, t_touch *touch)
 {
-	kdm_vec3_sub(touch->normal, touch->point, ray->object->data.sphere.pos);
+	kdm_vec3_sub(touch->normal, touch->point, ray->object->pos);
 	if (touch->side == INSIDE)
 		kdm_vec3_negate(touch->normal);
 	kdm_vec3_normalize(touch->normal);

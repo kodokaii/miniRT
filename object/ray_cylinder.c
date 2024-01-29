@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/23 12:48:12 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/29 21:33:48 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@ static float	_clamp_height(t_ray *ray, float distance)
 	if (0.0f <= distance)
 	{
 		get_point(point, ray->origin, ray->direction, distance);
-		kdm_vec3_sub(diff, point, ray->object->data.cylinder.pos);
-		h = kdm_vec3_dot(diff, ray->object->data.cylinder.axis);
-		if (h < 0 || ray->object->data.cylinder.height < h)
+		kdm_vec3_sub(diff, point, ray->object->pos);
+		h = kdm_vec3_dot(diff, ray->object->z);
+		if (h < 0 || ray->object->height < h)
 			return (INVALID_DISTANCE);
 	}
 	return (distance);
@@ -37,16 +37,15 @@ int	ray_cylinder(t_ray *ray, t_touch *touch)
 	float	x[2];
 	t_vec3	diff;
 
-	kdm_vec3_sub(diff, ray->origin, ray->object->data.cylinder.pos);
+	kdm_vec3_sub(diff, ray->origin, ray->object->pos);
 	a = kdm_vec3_dot(ray->direction, ray->direction)
-		- kdm_square(kdm_vec3_dot(ray->direction,
-				ray->object->data.cylinder.axis));
+		- kdm_square(kdm_vec3_dot(ray->direction, ray->object->z));
 	b = 2.0f * (kdm_vec3_dot(ray->direction, diff)
-			- kdm_vec3_dot(ray->direction, ray->object->data.cylinder.axis)
-			* kdm_vec3_dot(diff, ray->object->data.cylinder.axis));
+			- kdm_vec3_dot(ray->direction, ray->object->z)
+			* kdm_vec3_dot(diff, ray->object->z));
 	c = kdm_vec3_dot(diff, diff)
-		- kdm_square(kdm_vec3_dot(diff, ray->object->data.cylinder.axis))
-		- kdm_square(ray->object->data.cylinder.radius);
+		- kdm_square(kdm_vec3_dot(diff, ray->object->z))
+		- kdm_square(ray->object->width / 2);
 	if (kdm_quadratic_equation(x, a, b, c))
 		return (EXIT_FAILURE);
 	if (x[1] < x[0])
