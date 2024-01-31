@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/29 21:37:14 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/31 12:19:19 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,16 @@ static int	_set_distance(float x[2], t_touch *touch)
 	return (EXIT_SUCCESS);
 }
 
-static void	_set_normal(t_ray *ray, t_touch *touch)
+static void	_set_tbn(t_ray *ray, t_touch *touch)
 {
 	kdm_vec3_sub(touch->normal, touch->point, ray->object->pos);
 	if (touch->side == INSIDE)
 		kdm_vec3_negate(touch->normal);
 	kdm_vec3_normalize(touch->normal);
+	kdm_vec3_crossn(touch->tangent, ray->object->z, touch->normal);
+	if (!kdm_vec3_dot(touch->tangent, touch->tangent))
+		kdm_vec3_cpy(touch->tangent, ray->object->y);
+	kdm_vec3_crossn(touch->bitangent, touch->normal, touch->tangent);
 }
 
 int	touch_sphere(t_ray *ray, float x[2], t_touch *touch)
@@ -54,7 +58,7 @@ int	touch_sphere(t_ray *ray, float x[2], t_touch *touch)
 	if (_set_distance(x, touch))
 		return (EXIT_FAILURE);
 	get_point(touch->point, ray->origin, ray->direction, touch->distance);
-	_set_normal(ray, touch);
+	_set_tbn(ray, touch);
 	_set_uv(ray, touch);
 	shift_point(touch->point, touch->normal);
 	return (EXIT_SUCCESS);

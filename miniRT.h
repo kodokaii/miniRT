@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/29 21:24:05 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/31 14:05:39 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 # define SENSITIVITY		0.7f
 
 # define BIAS				0.001f
+# define PLANE_UV_SIZE		100.0f
 
 typedef enum s_side
 {
@@ -62,6 +63,13 @@ typedef struct s_light
 	t_vec3	color;
 }	t_light;
 
+typedef struct s_sky
+{
+	t_vec3			color_up;
+	t_vec3			color_down;
+	mlx_texture_t	*sky_box;
+}	t_sky;
+
 typedef struct s_viewplane
 {
 	float	distance;
@@ -74,6 +82,7 @@ typedef struct s_rt_count
 	t_uint	ambient;
 	t_uint	camera;
 	t_uint	light;
+	t_uint	sky;
 	t_uint	object[OBJECT_COUNT];
 }	t_rt_count;
 
@@ -88,6 +97,8 @@ typedef struct s_object
 	t_vec3			y;
 	t_vec3			z;
 	t_vec3			color;
+	mlx_texture_t	*bump_map;
+	mlx_texture_t	*texture;
 }	t_object;
 
 typedef struct s_rt
@@ -96,6 +107,7 @@ typedef struct s_rt
 	t_viewplane	viewplane;
 	t_ambient	ambient;
 	t_camera	camera;
+	t_sky		sky;
 	t_list		*light;
 	t_list		*object;
 }	t_rt;
@@ -123,6 +135,8 @@ typedef struct s_touch
 	t_side	side;		
 	t_vec3	point;
 	t_vec3	normal;
+	t_vec3	tangent;
+	t_vec3	bitangent;
 	t_vec2	uv;
 }	t_touch;
 
@@ -133,6 +147,7 @@ typedef struct s_phong
 	float	ambient_ratio;
 	float	diffuse_ratio;
 	float	specular_ratio;
+	t_vec3	normal;
 	t_vec3	light_dir;
 	t_vec3	view_dir;
 	t_vec3	reflect_dir;
@@ -145,10 +160,14 @@ typedef struct s_phong
 int			parse_value(char **str, float *value, float min, float max);
 int			parse_vec3(char **str, t_vec3 vec, float min, float max);
 int			parse_color(char **str, t_vec3 color_vec);
+int			parse_identifier(char **line, char *identifier);
+int			parse_texture(char **str, mlx_texture_t **texture);
+int			parse_object_texture(char **str, t_object *object);
 int			add_object(t_rt *rt, t_object *object);
 
 int			parse_ambient(t_rt *rt, char **line);
 int			parse_camera(t_rt *rt, char **line);
+int			parse_sky(t_rt *rt, char **line);
 int			parse_light(t_rt *rt, char **line);
 
 int			parse_sphere(t_rt *rt, char **line);
@@ -160,6 +179,12 @@ int			parse_rt(t_rt *rt, char *file);
 void		draw_frame(void *param);
 
 void		get_light_phong(t_vec3 light, t_touch *touch, t_rt *rt);
+void		texture_pixel(t_vec3 pixel, t_vec2 uv, mlx_texture_t *texture);
+void		touch_color(t_vec3 color, t_touch *touch, t_rt *rt, t_uint iter);
+
+void		get_point(t_vec3 point, t_vec3 origin,
+				t_vec3 direction, float distance);
+void		shift_point(t_vec3 point, t_vec3 normal);
 
 int			ray_sphere(t_ray *ray, t_touch *touch);
 int			ray_plane(t_ray *ray, t_touch *touch);
@@ -170,10 +195,7 @@ int			raytracing(t_vec3 origin, t_vec3 direction,
 int			touch_sphere(t_ray *ray, float x[2], t_touch *touch);
 int			touch_cylinder(t_ray *ray, float x[2], t_touch *touch);
 int			touch_plane(t_ray *ray, float x, t_touch *touch);
-
-void		get_point(t_vec3 point, t_vec3 origin,
-				t_vec3 direction, float distance);
-void		shift_point(t_vec3 point, t_vec3 normal);
+int			touch_sky(t_ray *ray, t_touch *touch);
 
 void		resize_hook(int width, int heigth, void *param);
 void		key_hook(mlx_key_data_t keydata, void *param);

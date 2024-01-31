@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/17 13:00:23 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/31 11:36:28 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,19 @@ int	parse_color(char **str, t_vec3 color)
 	color[X] /= 255.0f;
 	color[Y] /= 255.0f;
 	color[Z] /= 255.0f;
+	return (EXIT_SUCCESS);
+}
+
+int	parse_identifier(char **line, char *identifier)
+{
+	size_t	i;
+
+	i = 0;
+	while ((*line)[i] && (*line)[i] == identifier[i])
+		i++;
+	if (!ft_isspace((*line)[i]))
+		return (EXIT_FAILURE);
+	(*line) += i;
 	return (EXIT_SUCCESS);
 }
 

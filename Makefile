@@ -28,7 +28,10 @@ SRC 		= cleanup.c\
 			  object/touch_cylinder.c\
 			  object/touch_plane.c\
 			  object/touch_sphere.c\
+			  object/touch_sky.c\
+			  pixel_color.c\
 			  parse_elements.c\
+			  parse_texture.c\
 			  parse_objects.c\
 			  parse_utils.c\
 			  parsing.c\
@@ -84,5 +87,8 @@ clear: fclean
 	$(RM) -r $(KDM)
 
 re: fclean all
+
+fast: fclean
+	$(MAKE) -j$$(nproc)
 
 .PHONY:		all bonus clear clean fclean re

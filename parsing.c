@@ -6,47 +6,38 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/21 14:35:27 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/31 14:08:44 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "miniRT.h"
 
-static int	_parse_identifier(char **line, char *identifier)
+static int	_parse(t_rt *rt, char **line)
 {
-	size_t	i;
-
-	i = 0;
-	while ((*line)[i] && (*line)[i] == identifier[i])
-		i++;
-	if (!ft_isspace((*line)[i]))
-		return (EXIT_FAILURE);
-	(*line) += i;
-	return (EXIT_SUCCESS);
+	if (**line == '#' || **line == '\n')
+		return (EXIT_SUCCESS);
+	else if (!parse_identifier(line, "A"))
+		return (parse_ambient(rt, line));
+	else if (!parse_identifier(line, "C"))
+		return (parse_camera(rt, line));
+	else if (!parse_identifier(line, "S"))
+		return (parse_sky(rt, line));
+	else if (!parse_identifier(line, "l"))
+		return (parse_light(rt, line));
+	else if (!parse_identifier(line, "sp"))
+		return (parse_sphere(rt, line));
+	else if (!parse_identifier(line, "pl"))
+		return (parse_plane(rt, line));
+	else if (!parse_identifier(line, "cy"))
+		return (parse_cylinder(rt, line));
+	else
+		return (ft_error("Unknown identifier !", EXIT_FAILURE));
 }
 
 static int	_parse_line(t_rt *rt, char *line)
 {
-	int	error;
-
 	line = ft_skip_blank(line);
-	if (*line == '#' || *line == '\n')
-		error = EXIT_SUCCESS;
-	else if (!_parse_identifier(&line, "A"))
-		error = parse_ambient(rt, &line);
-	else if (!_parse_identifier(&line, "C"))
-		error = parse_camera(rt, &line);
-	else if (!_parse_identifier(&line, "l"))
-		error = parse_light(rt, &line);
-	else if (!_parse_identifier(&line, "sp"))
-		error = parse_sphere(rt, &line);
-	else if (!_parse_identifier(&line, "pl"))
-		error = parse_plane(rt, &line);
-	else if (!_parse_identifier(&line, "cy"))
-		error = parse_cylinder(rt, &line);
-	else
-		return (ft_error("Unknown identifier !", EXIT_FAILURE));
-	if (error)
+	if (_parse(rt, &line))
 		return (EXIT_FAILURE);
 	if (*line != '#' && *ft_skip_blank(line) != '\n')
 		return (ft_error("Too many Value !", EXIT_FAILURE));
@@ -69,6 +60,8 @@ static int	_check_essential(t_rt *rt)
 		return (ft_error("Missing camera !", EXIT_FAILURE));
 	if (rt->count.light < 1)
 		return (ft_error("Missing light !", EXIT_FAILURE));
+	if (rt->count.sky < 1)
+		return (ft_error("Missing sky !", EXIT_FAILURE));
 	return (EXIT_SUCCESS);
 }
 

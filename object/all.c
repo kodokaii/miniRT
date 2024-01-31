@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/21 13:10:36 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/31 11:54:51 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,6 @@ int	raytracing(t_vec3 origin, t_vec3 direction, t_touch *touch, t_rt *rt)
 		current = current->next;
 	}
 	if (!touch->ray.object)
-		return (EXIT_FAILURE);
+		return (touch_sky(&ray, touch));
 	return (EXIT_SUCCESS);
 }

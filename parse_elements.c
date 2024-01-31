@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/21 14:54:23 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/01/31 14:56:21 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,28 @@ int	parse_camera(t_rt *rt, char **line)
 	return (EXIT_SUCCESS);
 }
 
+int	parse_sky(t_rt *rt, char **line)
+{
+	if (0 < rt->count.sky)
+		return (ft_error("Too many sky !", EXIT_FAILURE));
+	if (parse_color(line, rt->sky.color_up))
+		return (EXIT_FAILURE);
+	if (parse_color(line, rt->sky.color_down))
+		return (EXIT_FAILURE);
+	*line = ft_skip_blank(*line);
+	rt->count.sky++;
+	if (**line == '\n')
+		return (EXIT_SUCCESS);
+	return (parse_texture(line, &rt->sky.sky_box));
+}
+
 int	parse_light(t_rt *rt, char **line)
 {
 	t_light	light;
 
 	if (parse_vec3(line, light.pos, -FLT_MAX, FLT_MAX))
 		return (EXIT_FAILURE);
-	if (parse_value(line, &light.ratio, 0.0, 1.0f))
+	if (parse_value(line, &light.ratio, 0.0, FLT_MAX))
 		return (EXIT_FAILURE);
 	if (parse_color(line, light.color))
 		return (EXIT_FAILURE);
