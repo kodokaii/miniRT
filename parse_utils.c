@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/02/01 15:55:32 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/02/03 15:15:10 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ int	parse_identifier(char **line, char *identifier)
 	i = 0;
 	while ((*line)[i] && (*line)[i] == identifier[i])
 		i++;
-	if (!ft_isspace((*line)[i]))
+	if (identifier[i] || !ft_isspace((*line)[i]))
 		return (EXIT_FAILURE);
 	(*line) += i;
 	return (EXIT_SUCCESS);

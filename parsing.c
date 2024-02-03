@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/02/03 13:43:08 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/02/03 15:13:05 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,10 +69,11 @@ static int	_check_essential(t_rt *rt)
 
 int	parse_rt(t_rt *rt, char *file)
 {
+	t_uint	line_count;
 	t_buf	line;
 	int		fd;
-	int		i = 1;
 
+	line_count = 1;
 	if (_check_extension(file))
 		return (ft_error("Invalid extension !", EXIT_FAILURE));
 	fd = open(file, O_RDONLY);
@@ -85,16 +86,12 @@ int	parse_rt(t_rt *rt, char *file)
 	{
 		if (_parse_line(rt, line.buf))
 		{
-			ft_buf_free(&line);
-			ft_close(&fd);
-			ft_dprintf(2, "line: %d\n", i);
-			return (EXIT_FAILURE);
+			ft_dprintf(2, "line: %d\n", line_count);
+			return (ft_buf_free(&line), ft_close(&fd), EXIT_FAILURE);
 		}
 		ft_buf_free(&line);
 		line = ft_gnl(fd);
-		i++;
+		line_count++;
 	}
-	ft_buf_free(&line);
-	ft_close(&fd);
-	return (_check_essential(rt));
+	return (ft_buf_free(&line), ft_close(&fd), _check_essential(rt));
 }
