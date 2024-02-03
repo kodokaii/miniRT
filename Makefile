@@ -22,20 +22,22 @@ SRC 		= cleanup.c\
 			  miniRT.c\
 			  mlx_utils.c\
 			  object/all.c\
+			  object/hit_cylinder.c\
+			  object/hit_plane.c\
+			  object/hit_sky.c\
+			  object/hit_sphere.c\
+			  object/hit_triangle.c\
 			  object/ray_cylinder.c\
 			  object/ray_plane.c\
 			  object/ray_sphere.c\
-			  object/touch_cylinder.c\
-			  object/touch_plane.c\
-			  object/touch_sphere.c\
-			  object/touch_sky.c\
-			  pixel_color.c\
+			  object/ray_triangle.c\
 			  parse_elements.c\
-			  parse_texture.c\
 			  parse_objects.c\
+			  parse_texture.c\
 			  parse_utils.c\
 			  parsing.c\
 			  phong.c\
+			  pixel_color.c\
 			  utils.c
 
 OBJ 		= $(SRC:.c=.o)

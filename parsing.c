@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/31 14:08:44 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/02/03 13:43:08 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ static int	_parse(t_rt *rt, char **line)
 		return (parse_plane(rt, line));
 	else if (!parse_identifier(line, "cy"))
 		return (parse_cylinder(rt, line));
+	else if (!parse_identifier(line, "tr"))
+		return (parse_triangle(rt, line));
 	else
 		return (ft_error("Unknown identifier !", EXIT_FAILURE));
 }
@@ -69,6 +71,7 @@ int	parse_rt(t_rt *rt, char *file)
 {
 	t_buf	line;
 	int		fd;
+	int		i = 1;
 
 	if (_check_extension(file))
 		return (ft_error("Invalid extension !", EXIT_FAILURE));
@@ -84,10 +87,12 @@ int	parse_rt(t_rt *rt, char *file)
 		{
 			ft_buf_free(&line);
 			ft_close(&fd);
+			ft_dprintf(2, "line: %d\n", i);
 			return (EXIT_FAILURE);
 		}
 		ft_buf_free(&line);
 		line = ft_gnl(fd);
+		i++;
 	}
 	ft_buf_free(&line);
 	ft_close(&fd);

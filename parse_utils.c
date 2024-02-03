@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/31 11:36:28 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/02/01 15:55:32 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,14 +69,15 @@ int	parse_identifier(char **line, char *identifier)
 	return (EXIT_SUCCESS);
 }
 
-int	add_object(t_rt *rt, t_object *object)
+int	parse_material(char **line, t_object *object)
 {
-	t_list	*new_object;
-
-	if (object->type == INVALID_OBJECT)
+	if (parse_color(line, object->color))
 		return (EXIT_FAILURE);
-	new_object = ft_lstnew(ft_memdup(object, sizeof(t_object)));
-	ft_lstadd_front(&rt->object, new_object);
-	rt->count.object[object->type]++;
+	if (parse_value(line, &object->reflect, 0.0f, 1.0f))
+		return (EXIT_FAILURE);
+	if (parse_object_texture(line, object))
+		return (EXIT_FAILURE);
+	if (parse_object_texture(line, object))
+		return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);
 }

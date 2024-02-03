@@ -12,21 +12,21 @@
 
 #include "../miniRT.h"
 
-int	ray_sphere(t_ray *ray, t_touch *touch)
+int	ray_sphere(t_ray *ray, t_hit *hit)
 {
 	float	a;
 	float	b;
 	float	c;
 	float	x[2];
-	t_vec3	diff;
+	t_vec3	delta;
 
-	kdm_vec3_sub(diff, ray->origin, ray->object->pos);
+	kdm_vec3_sub(delta, ray->origin, ray->object->pos);
 	a = kdm_vec3_dot(ray->direction, ray->direction);
-	b = 2 * kdm_vec3_dot(ray->direction, diff);
-	c = kdm_vec3_dot(diff, diff) - kdm_square(ray->object->width / 2);
+	b = 2 * kdm_vec3_dot(ray->direction, delta);
+	c = kdm_vec3_dot(delta, delta) - kdm_square(ray->object->width / 2);
 	if (kdm_quadratic_equation(x, a, b, c))
 		return (EXIT_FAILURE);
 	if (x[1] < x[0])
 		ft_swap_float(x, x + 1);
-	return (touch_sphere(ray, x, touch));
+	return (hit_sphere(ray, x, hit));
 }

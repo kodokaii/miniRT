@@ -6,7 +6,7 @@
 /*   By: nlaerema <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 13:22:49 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/31 11:14:03 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/02/02 18:25:53 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,12 @@ static void	_direction(t_vec3 direction, float x, float y, t_rt *rt)
 static int	_draw_pixel(float x, float y, t_mlx *mlx)
 {
 	t_vec3		direction;
-	t_touch		touch;
+	t_hit		hit;
 	t_vec3		color;
 
 	_direction(direction, x, y, &mlx->rt);
-	raytracing(mlx->rt.camera.pos, direction, &touch, &mlx->rt);
-	touch_color(color, &touch, &mlx->rt, 16);
+	raytracing(mlx->rt.camera.pos, direction, &hit, &mlx->rt);
+	hit_color(color, &hit, &mlx->rt, 8);
 	return (new_pixel(color, 1.0f));
 }
 

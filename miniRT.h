@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/31 14:05:39 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/02/03 14:46:16 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,18 +22,20 @@
 
 # define INVALID_DISTANCE	-FLT_MAX
 
-# define OBJECT_COUNT		3
+# define OBJECT_COUNT		4
 
 # define INVALID_OBJECT		-1
 # define SPHERE				0
 # define PLANE				1
 # define CYLINDER			2
+# define TRIANGLE			3
 
 # define SPEED				1.5f
 # define SENSITIVITY		0.7f
 
-# define BIAS				0.001f
+# define BIAS				0.01f
 # define PLANE_UV_SIZE		100.0f
+# define TRIANGLE_UV_SIZE	50.0f
 
 typedef enum s_side
 {
@@ -93,6 +95,9 @@ typedef struct s_object
 	float			width;
 	float			height;
 	t_vec3			pos;
+	t_vec3			vertex1;
+	t_vec3			vertex2;
+	t_vec3			vertex3;
 	t_vec3			x;
 	t_vec3			y;
 	t_vec3			z;
@@ -128,17 +133,15 @@ typedef struct s_ray
 	t_vec3		direction;
 }	t_ray;
 
-typedef struct s_touch
+typedef struct s_hit
 {
 	t_ray	ray;
 	float	distance;
 	t_side	side;		
 	t_vec3	point;
 	t_vec3	normal;
-	t_vec3	tangent;
-	t_vec3	bitangent;
 	t_vec2	uv;
-}	t_touch;
+}	t_hit;
 
 typedef struct s_phong
 {
@@ -147,14 +150,13 @@ typedef struct s_phong
 	float	ambient_ratio;
 	float	diffuse_ratio;
 	float	specular_ratio;
-	t_vec3	normal;
 	t_vec3	light_dir;
 	t_vec3	view_dir;
 	t_vec3	reflect_dir;
 	t_vec3	ambient;
 	t_vec3	diffuse;
 	t_vec3	specular;
-	t_touch	touch;
+	t_hit	hit;
 }	t_phong;
 
 int			parse_value(char **str, float *value, float min, float max);
@@ -163,7 +165,7 @@ int			parse_color(char **str, t_vec3 color_vec);
 int			parse_identifier(char **line, char *identifier);
 int			parse_texture(char **str, mlx_texture_t **texture);
 int			parse_object_texture(char **str, t_object *object);
-int			add_object(t_rt *rt, t_object *object);
+int			parse_material(char **line, t_object *object);
 
 int			parse_ambient(t_rt *rt, char **line);
 int			parse_camera(t_rt *rt, char **line);
@@ -173,29 +175,33 @@ int			parse_light(t_rt *rt, char **line);
 int			parse_sphere(t_rt *rt, char **line);
 int			parse_plane(t_rt *rt, char **line);
 int			parse_cylinder(t_rt *rt, char **line);
+int			parse_triangle(t_rt *rt, char **line);
+int			add_object(t_rt *rt, t_object *object);
 
 int			parse_rt(t_rt *rt, char *file);
 
 void		draw_frame(void *param);
 
-void		get_light_phong(t_vec3 light, t_touch *touch, t_rt *rt);
+void		get_light_phong(t_vec3 light, t_hit *hit, t_rt *rt);
 void		texture_pixel(t_vec3 pixel, t_vec2 uv, mlx_texture_t *texture);
-void		touch_color(t_vec3 color, t_touch *touch, t_rt *rt, t_uint iter);
+void		hit_color(t_vec3 color, t_hit *hit, t_rt *rt, t_uint iter);
 
 void		get_point(t_vec3 point, t_vec3 origin,
 				t_vec3 direction, float distance);
 void		shift_point(t_vec3 point, t_vec3 normal);
 
-int			ray_sphere(t_ray *ray, t_touch *touch);
-int			ray_plane(t_ray *ray, t_touch *touch);
-int			ray_cylinder(t_ray *ray, t_touch *touch);
+int			ray_sphere(t_ray *ray, t_hit *hit);
+int			ray_plane(t_ray *ray, t_hit *hit);
+int			ray_cylinder(t_ray *ray, t_hit *hit);
+int			ray_triangle(t_ray *ray, t_hit *hit);
 int			raytracing(t_vec3 origin, t_vec3 direction,
-				t_touch *touch, t_rt *rt);
+				t_hit *hit, t_rt *rt);
 
-int			touch_sphere(t_ray *ray, float x[2], t_touch *touch);
-int			touch_cylinder(t_ray *ray, float x[2], t_touch *touch);
-int			touch_plane(t_ray *ray, float x, t_touch *touch);
-int			touch_sky(t_ray *ray, t_touch *touch);
+int			hit_sphere(t_ray *ray, float x[2], t_hit *hit);
+int			hit_cylinder(t_ray *ray, float x[2], t_hit *hit);
+int			hit_plane(t_ray *ray, float x, t_hit *hit);
+int			hit_triangle(t_ray *ray, float x, t_hit *hit);
+int			hit_sky(t_ray *ray, t_hit *hit);
 
 void		resize_hook(int width, int heigth, void *param);
 void		key_hook(mlx_key_data_t keydata, void *param);
