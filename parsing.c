@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/02/05 14:54:45 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/02/05 15:03:15 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static int	_parse_line(t_rt *rt, char *line)
 	if (_parse(rt, &line))
 		return (EXIT_FAILURE);
 	if (*line != '#' && *ft_skip_blank(line) != '\n')
-		return (ft_error("Too many Value !", EXIT_FAILURE));
+		return (ft_error("Too many values !", EXIT_FAILURE));
 	return (EXIT_SUCCESS);
 }
 
