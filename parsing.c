@@ -6,7 +6,7 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/02/03 15:13:05 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/02/05 14:54:45 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ int	parse_rt(t_rt *rt, char *file)
 		return (ft_error("Can't open file !", EXIT_FAILURE));
 	line = ft_gnl(fd);
 	if (line.size == INVALID_SIZE)
-		return (ft_error("Can't read file !", EXIT_FAILURE));
+		return (ft_close(&fd), ft_error("Can't read file !", EXIT_FAILURE));
 	while (0 < line.size)
 	{
 		if (_parse_line(rt, line.buf))
