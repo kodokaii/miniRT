@@ -6,19 +6,19 @@
 /*   By: nlaerema <nlaerema@student.42lehavre.fr>	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 10:58:17 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/02/03 14:05:16 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/02/05 15:16:44 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "miniRT.h"
 
-void	resize_hook(int width, int heigth, void *param)
+void	resize_hook(int width, int height, void *param)
 {
 	t_mlx	*mlx;
 
 	mlx = param;
-	mlx->ratio = (float)width / (float)heigth;
-	mlx_resize_image(mlx->image, width, heigth);
+	mlx->ratio = (float)width / (float)height;
+	mlx_resize_image(mlx->image, width, height);
 }
 
 void	key_hook(mlx_key_data_t keydata, void *param)

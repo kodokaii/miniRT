@@ -6,7 +6,7 @@
 /*   By: nlaerema <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/02 16:09:23 by nlaerema          #+#    #+#             */
-/*   Updated: 2024/01/20 01:01:52 by nlaerema         ###   ########.fr       */
+/*   Updated: 2024/02/05 15:14:17 by nlaerema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	main(int argc, char *argv[])
 	if (parse_rt(&mlx.rt, argv[1]))
 		return (rt_cleanup(&mlx), EXIT_FAILURE);
 	if (_init(&mlx))
-		return (ft_error("Init MLX failed !", EXIT_FAILURE));
+		return (rt_cleanup(&mlx), ft_error("Init MLX failed !", EXIT_FAILURE));
 	mlx_resize_hook(mlx.win, &resize_hook, &mlx);
 	mlx_key_hook(mlx.win, &key_hook, &mlx);
 	mlx_loop_hook(mlx.win, &move_hook, &mlx);
