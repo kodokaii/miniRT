@@ -63,7 +63,7 @@ $(MLX):
 	cmake $(MLX) -B $(MLX)	
 
 $(FT):
-	$(CLONE) https://github.com/kodokaii/libft_plus_plus.git $(FT)
+	$(CLONE) https://github.com/kodokaii/libft_full.git $(FT)
 
 $(KDM):
 	$(CLONE) https://github.com/kodokaii/kdm.git $(KDM)

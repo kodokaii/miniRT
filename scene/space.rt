@@ -4,13 +4,8 @@ C	31.96,934.70,1.50	-0.68,0.72,0.12	50
 
 S	255,255,255		0,0,0	textures/space.png
 
-l	0,700,0						10.0			255,215,150
-l	0,-700,0					10.0			255,215,150
-l	700,0,0						10.0			255,215,150
-l	-700,0,0					10.0			255,215,150
-l	0,0,700						10.0			255,215,150
-l	0,0,-700					10.0			255,215,150
+l	0,700,0						100.0			255,215,150
 
 sp	0,0,0						500				255,255,255	0.01 T: textures/sun.png
 sp	0,1000,0					50				255,255,255	0.01 T: textures/earth.png B: textures/earth_bump.png
-sp	-80,1000,0					5				255,255,255	0.01 T: textures/moon.png B: textures/moon_bump.png
+sp	0,920,0					5				255,255,255	0.01 T: textures/moon.png B: textures/moon_bump.png
