@@ -1,0 +1,9 @@
+[submodule "kdm"]
+	path = kdm
+	url = https://github.com/kodokaii/kdm
+[submodule "libft"]
+	path = libft
+	url = https://github.com/kodokaii/libft_full
+[submodule "minilibx"]
+	path = minilibx
+	url = https://github.com/kodokaii/MLX42

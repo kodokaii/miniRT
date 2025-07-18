@@ -28,5 +28,5 @@ void	rt_cleanup(t_mlx *mlx)
 	if (mlx->rt.sky.sky_box)
 		mlx_delete_texture(mlx->rt.sky.sky_box);
 	ft_lstclear(&mlx->rt.light, free);
-	ft_lstclear(&mlx->rt.object, _free_object);
+	ft_lstclear(&mlx->rt.object, (void (*)(void *))_free_object);
 }

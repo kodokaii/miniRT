@@ -2,19 +2,18 @@ NAME 		= miniRT
 
 CC 			= cc
 RM			= rm -f
-CLONE 		= git clone --depth=1
 
 CFLAGS 		+= -Wall -Wextra -Werror -O3
 CLINKS		= -ldl -lglfw -pthread -lm
 
-MLX			= minilibx
-LIBMLX 		= $(MLX)/libmlx42.a
+LIBMLX_DIR	= minilibx
+LIBMLX 		= $(LIBMLX_DIR)/libmlx42.a
 
-FT			= libft
-LIBFT		= $(FT)/libft.a
+LIBFT_DIR	= libft
+LIBFT		= $(LIBFT_DIR)/libft.a
 
-KDM			= kdm
-LIBKDM		= $(KDM)/libkdm.a
+LIBKDM_DIR	= kdm
+LIBKDM		= $(LIBKDM_DIR)/libkdm.a
 
 SRC 		= cleanup.c\
 			  draw.c\
@@ -49,32 +48,23 @@ bonus: $(NAME)
 $(NAME): $(LIBMLX) $(LIBFT) $(LIBKDM) $(OBJ)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LIBMLX) $(LIBFT) $(LIBKDM) $(CLINKS)
 
-$(LIBMLX): $(MLX)
-	$(MAKE) -C $(MLX)
+$(LIBMLX): $(LIBMLX_DIR)
+	cmake $(LIBMLX_DIR) -B $(LIBMLX_DIR)	
+	$(MAKE) -C $(LIBMLX_DIR)
 
-$(LIBFT): $(FT)
-	$(MAKE) -C $(FT)
+$(LIBFT): $(LIBFT_DIR)
+	$(MAKE) -C $(LIBFT_DIR)
 
-$(LIBKDM): $(KDM)
-	$(MAKE) -C $(KDM)
-
-$(MLX):
-	$(CLONE) https://github.com/kodokaii/MLX42.git $(MLX)
-	cmake $(MLX) -B $(MLX)	
-
-$(FT):
-	$(CLONE) https://github.com/kodokaii/libft_full.git $(FT)
-
-$(KDM):
-	$(CLONE) https://github.com/kodokaii/kdm.git $(KDM)
+$(LIBKDM): $(LIBKDM_DIR)
+	$(MAKE) -C $(LIBKDM_DIR)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	if [ -d "$(MLX)" ]; then $(MAKE) clean -C $(MLX); fi
-	if [ -d "$(FT)" ]; then $(MAKE) clean -C $(FT); fi
-	if [ -d "$(KDM)" ]; then $(MAKE) clean -C $(KDM); fi
+	$(MAKE) clean -C $(LIBMLX_DIR)
+	$(MAKE) clean -C $(LIBFT_DIR)
+	$(MAKE) clean -C $(LIBKDM_DIR)
 	$(RM) $(OBJ)
 
 fclean: clean
@@ -83,14 +73,9 @@ fclean: clean
 	$(RM) $(LIBKDM)
 	$(RM) $(NAME)
 
-clear: fclean
-	$(RM) -r $(MLX) 
-	$(RM) -r $(FT)
-	$(RM) -r $(KDM)
-
 re: fclean all
 
 fast: fclean
 	$(MAKE) -j$$(nproc)
 
-.PHONY:		all bonus clear clean fclean re
+.PHONY:		all bonus clean fclean re
